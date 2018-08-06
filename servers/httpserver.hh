@@ -41,7 +41,7 @@ protected:
     ///
     /// Handles an HTTP server connection
     ///
-    void doSession(boost::asio::ip::tcp::socket& socket, std::string const& doc_root);
+    void doSession(boost::asio::ip::tcp::socket& socket);
 
 }; /// HTTPServer
 

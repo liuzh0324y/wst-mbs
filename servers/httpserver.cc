@@ -1,6 +1,5 @@
 #include "httpserver.hh"
-#include "httpsession.hh"
-
+#include "httplistener.hh"
 #include <cstdlib>
 #include <iostream>
 #include <memory>
@@ -17,10 +16,7 @@ struct send_lambda
     boost::system::error_code& ec_;
 
     explicit
-    send_lambda(
-        Stream& stream,
-        bool& close,
-        boost::system::error_code& ec)
+    send_lambda(Stream& stream, bool& close, boost::system::error_code& ec)
         : stream_(stream)
         , close_(close)
         , ec_(ec)
@@ -51,37 +47,49 @@ HTTPServer::~HTTPServer()
 
 }
 
-void test(int &) 
-{
-    std::cout << "test." << std::endl; 
-}
 void HTTPServer::Run()
 {
     try
     {
         auto const address = boost::asio::ip::make_address("0.0.0.0");
         auto const port = 18005;
-        std::string const doc_root = "/home/liuzh/share";
+        auto const doc_root = std::make_shared<std::string>("/home/liuzh/share");
+        auto const threads = 8;
 
         // The io_context is required for all I/O
-        boost::asio::io_context ioc{1};
+        boost::asio::io_context ioc{threads};
 
-        // The acceptor receives incoming connections
-        boost::asio::ip::tcp::acceptor acceptor{ioc, {address, port}};
-        for(;;)
+        std::make_shared<HTTPListenser>(ioc, tcp::endpoint{address, port}, doc_root)->Run();
+
+        std::vector<std::thread> v;
+        v.reserve(threads - 1);
+        for (auto i = threads - 1; i > 0; --i)
         {
-            // This will receive the new connection
-            boost::asio::ip::tcp::socket socket{ioc};
-
-            // Block until we get a connection
-            acceptor.accept(socket);
-
-            // Launch the session, transferring ownership of the socket
-            // std::thread{std::bind(&doSession, std::move(socket), doc_root)}.detach();
-            std::thread{
-                std::bind(&HTTPSession::doSession)
-            }.detach();
+            v.emplace_back(
+                [&ioc]
+                {
+                    ioc.run();
+                }
+            );
         }
+        ioc.run();
+        // The acceptor receives incoming connections
+        // boost::asio::ip::tcp::acceptor acceptor{ioc, {address, port}};
+        // for(;;)
+        // {
+        //     // This will receive the new connection
+        //     boost::asio::ip::tcp::socket socket{ioc};
+
+        //     // Block until we get a connection
+        //     acceptor.accept(socket);
+
+        //     // Launch the session, transferring ownership of the socket
+        //     // std::thread{std::bind(&HTTPServer::doSession, std::move(socket))}.detach();
+
+        //     // std::thread{
+        //     //     std::bind(&HTTPSession::doSession, std::move(socket), doc_root)
+        //     // }.detach();
+        // }
     }
     catch (const std::exception& e)
     {
@@ -249,7 +257,7 @@ void HTTPServer::fail(boost::system::error_code ec, char const* what)
     std::cerr << what << ": " << ec.message() << "\n";
 }
 
-void HTTPServer::doSession(boost::asio::ip::tcp::socket& socket, std::string const& doc_root)
+void HTTPServer::doSession(boost::asio::ip::tcp::socket& socket)
 {
     bool close = false;
     boost::system::error_code ec;
@@ -267,13 +275,15 @@ void HTTPServer::doSession(boost::asio::ip::tcp::socket& socket, std::string con
         boost::beast::http::read(socket, buffer, req, ec);
         if(ec == boost::beast::http::error::end_of_stream)
             break;
-        if(ec)
-            return fail(ec, "read");
+        std::cout << req.target() << std::endl;
+        // if(ec)
+        //     return fail(ec, "read");
 
         // Send the response
-        handleRequest(doc_root, std::move(req), lambda);
-        if(ec)
-            return fail(ec, "write");
+        // handleRequest(doc_root, std::move(req), lambda);
+
+        // if(ec)
+        //     return fail(ec, "write");
         if(close)
         {
             // This means we should close the connection, usually because
