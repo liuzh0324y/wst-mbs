@@ -20,5 +20,5 @@
 using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 namespace http = boost::beast::http;    // from <boost/beast/http.hpp>
 
-
+#define WST_VERSION "wst-mbs:server-1.0"
 #endif // COMMON_HH

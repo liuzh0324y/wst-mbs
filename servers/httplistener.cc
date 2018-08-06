@@ -9,6 +9,7 @@ HTTPListenser::HTTPListenser(boost::asio::io_context& ioc, tcp::endpoint endpoin
 {
     boost::system::error_code ec;
 
+    // Open the acceptor
     acceptor_.open(endpoint.protocol(), ec);
     if (ec)
     {
@@ -25,18 +26,28 @@ HTTPListenser::HTTPListenser(boost::asio::io_context& ioc, tcp::endpoint endpoin
     }
 
     // Bind to the server address
+    acceptor_.bind(endpoint, ec);
+    if (ec)
+    {
+        fail(ec, "bind");
+        return;
+    }
+
+    // Start listen connections
     acceptor_.listen(boost::asio::socket_base::max_listen_connections, ec);
     if (ec)
     {
         fail(ec, "listen");
         return;
     }
+    std::cout << "struct" << std::endl;
 }
 
 void HTTPListenser::Run()
 {
     if (!acceptor_.is_open())
     {
+        std::cout << "???" << std::endl;
         return;
     }
     DoAccept();
@@ -44,7 +55,9 @@ void HTTPListenser::Run()
 
 void HTTPListenser::DoAccept()
 {
+    std::cout << "do accept start" << std::endl;
     acceptor_.async_accept(socket_, std::bind(&HTTPListenser::OnAccept, shared_from_this(), std::placeholders::_1));
+    std::cout << "do accept end" << std::endl;
 }
 
 void HTTPListenser::OnAccept(boost::system::error_code ec)
@@ -55,6 +68,7 @@ void HTTPListenser::OnAccept(boost::system::error_code ec)
     }
     else
     {
+        std::cout << "listenser accept." << std::endl;
         std::make_shared<HTTPSession>(std::move(socket_), doc_root_)->Run();
     }
 

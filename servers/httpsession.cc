@@ -42,7 +42,7 @@ void handleRequest(boost::beast::string_view doc_root, http::request<Body, http:
     [&req](boost::beast::string_view why)
     {
         http::response<http::string_body> res{http::status::bad_request, req.version()};
-        res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
+        res.set(http::field::server, WST_VERSION);
         res.set(http::field::content_type, "text/html");
         res.set(http::field::connection, "close");
         res.body() = why.to_string();
@@ -55,14 +55,36 @@ void handleRequest(boost::beast::string_view doc_root, http::request<Body, http:
     [&req](boost::beast::string_view target)
     {
         http::response<http::string_body> res{http::status::not_found, req.version()};
-        res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
+        res.set(http::field::server, WST_VERSION);
         res.set(http::field::content_type, "text/html");
         res.set(http::field::connection, "close");
-        res.body() = target.to_string();
+        res.body() = "nothing";
         res.prepare_payload();
         return res;
     };
 
+    // Returns a server error response
+    auto const server_error =
+    [&req](boost::beast::string_view what)
+    {
+        http::response<http::string_body> res{http::status::internal_server_error, req.version()};
+        res.set(http::field::server, WST_VERSION);
+        res.set(http::field::content_type, "text/html");
+        res.keep_alive(req.keep_alive());
+        res.body() = "An error occurred: '" + what.to_string() + "'";
+        res.prepare_payload();
+        return res;
+    };
+
+    if (req.method() == http::verb::get)
+    {
+        std::cout << "this is a get request, request path: " << req.target() << std::endl;
+    }
+    
+    // Parse uri and request method
+
+    // 
+    std::cout << "handler requst." << std::endl;
     return send(not_found(req.target()));
 }
 
@@ -95,6 +117,7 @@ void HTTPSession::DoRead()
             strand_,
             std::bind(&HTTPSession::OnRead, shared_from_this(), std::placeholders::_1, std::placeholders::_2)
         ));
+    std::cout << "session do read." << std::endl;
 }
 
 void HTTPSession::OnRead(boost::system::error_code ec, std::size_t bytes_transferred)
@@ -111,7 +134,7 @@ void HTTPSession::OnRead(boost::system::error_code ec, std::size_t bytes_transfe
     {
         return fail(ec, "read");
     }
-
+    std::cout << "session.read" << std::endl;
     // Send the response
     handleRequest(*doc_root_, std::move(req_), lambda_);
 }
