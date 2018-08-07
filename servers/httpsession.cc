@@ -2,6 +2,7 @@
 #include "httputils.hh"
 #include <iostream>
 
+
 // template<class Stream>
 // struct send_lambda
 // {
@@ -33,6 +34,165 @@
 //         boost::beast::http::write(stream_, sr, ec_);
 //     }
 // };
+
+json::ptree common()
+{
+    try 
+    {
+        json::ptree pt;
+        pt.put("version",WST_API_VERSION);
+        pt.put("seqnum", 1);
+        pt.put("from", "wst-mbs");
+        pt.put("to", "client");
+        pt.put("type", "mbs");
+        pt.put("number", "0108935265");
+        pt.put("message", "");
+        pt.put("code", 0);
+        return pt;
+    }
+    catch (json::ptree_error ec)
+    {
+        ec.what();
+        return json::ptree();
+    }
+}
+
+std::string createRecord()
+{
+    std::stringstream ss;
+    try
+    {
+        json::ptree pt = common();
+        json::ptree data;
+        data.put("id", "dddd-dddd-dddd-dddd");
+        data.put("name","sample.mp4");
+        data.put("type", "mp4");
+        data.put("path", "/root/path");
+        data.put("url", "http://localhost:8080/sample.mp4");
+        data.put("size", 1024);
+        pt.add_child("data", data);
+        json::write_json(ss, pt);
+        std::cout << "pt.data(): " << ss.str()<< std::endl;
+        return ss.str();
+    }
+    catch (json::ptree_error ec)
+    {
+        ec.what();
+        return std::string();
+    }
+}
+
+std::string queryRecordById()
+{
+    std::stringstream ss;
+    try
+    {
+        json::ptree pt = common();
+        json::ptree data;
+        data.put("id", "dddd-dddd-dddd-dddd");
+        data.put("type", "mp4");
+        data.put("path", "/root/path");
+        data.put("url", "http://localhost:8080/sample.mp4");
+        data.put("size", 1024);
+        data.put("description", "sample file.");
+        data.put("progress", 20);
+        pt.add_child("data", data);
+        json::write_json(ss, pt);
+        return ss.str();
+    }
+    catch (json::ptree_error ec)
+    {
+        ec.what();
+        return std::string();
+    }
+}
+
+std::string queryAllRecord()
+{
+    try
+    {
+        std::stringstream ss;
+        json::ptree pt = common();
+        // json::ptree data;
+        // data.put
+        json::write_json(ss, pt);
+        return ss.str();
+    }
+    catch (json::ptree_error ec)
+    {
+        ec.what();
+        return std::string();
+    }
+}
+
+std::string UpdateRecord()
+{
+    try
+    {
+        std::stringstream ss;
+        json::ptree pt = common();
+
+        json::write_json(ss, pt);
+        return ss.str();
+    }
+    catch (json::ptree_error ec)
+    {
+        ec.what();
+        return std::string();
+    }
+}
+
+std::string DeleteRecordById()
+{
+    try
+    {
+        std::stringstream ss;
+        json::ptree pt = common();
+
+        json::write_json(ss, pt);
+        return ss.str();
+    }
+    catch (json::ptree_error ec)
+    {
+        ec.what();
+        return std::string();
+    }
+}
+
+std::string DeleteAllRecord()
+{
+    try
+    {
+        std::stringstream ss;
+        json::ptree pt = common();
+
+        json::write_json(ss, pt);
+        return ss.str();
+    }
+    catch (json::ptree_error ec)
+    {
+        ec.what();
+        return std::string();
+    }
+}
+
+std::string parseurl(std::string target)
+{
+    std::size_t size = target.find("?");
+    if (size == 0)
+    {
+        return target;
+    }
+    else
+    {
+        return target.substr(0, size);
+    }
+}
+
+std::map<std::string, std::string> parseParam(std::string uri)
+{
+    // std::regex reg
+}
 
 template<class Body, class Allocator, class Send>
 void handleRequest(boost::beast::string_view doc_root, http::request<Body, http::basic_fields<Allocator>>&& req, Send&& send)
@@ -70,18 +230,129 @@ void handleRequest(boost::beast::string_view doc_root, http::request<Body, http:
         http::response<http::string_body> res{http::status::internal_server_error, req.version()};
         res.set(http::field::server, WST_VERSION);
         res.set(http::field::content_type, "text/html");
-        res.keep_alive(req.keep_alive());
+        res.set(http::field::connection, "close");
         res.body() = "An error occurred: '" + what.to_string() + "'";
         res.prepare_payload();
         return res;
     };
 
-    if (req.method() == http::verb::get)
+    auto const create_record =
+    [&req]()
     {
-        std::cout << "this is a get request, request path: " << req.target() << std::endl;
+        http::response<http::string_body> res{http::status::ok, req.version()}; 
+        res.set(http::field::server, WST_VERSION);
+        res.set(http::field::content_type, "application/json");
+        res.set(http::field::connection, "close");
+        res.body() = createRecord();
+        res.prepare_payload();
+        return res;
+    };
+
+    auto const query_record_by_id =
+    [&req]()
+    {
+        http::response<http::string_body> res{http::status::ok, req.version()};
+        res.set(http::field::server, WST_VERSION);
+        res.set(http::field::content_type, "application/json");
+        res.set(http::field::connection, "close");
+        res.body() = queryRecordById();
+        res.prepare_payload();
+        return res;
+    };
+
+    auto const query_all_record =
+    [&req]()
+    {
+        http::response<http::string_body> res{http::status::ok, req.version()};
+        res.set(http::field::server, WST_VERSION);
+        res.set(http::field::content_type, "application/json");
+        res.set(http::field::connection, "close");
+        res.body() = queryAllRecord();
+        res.prepare_payload();
+        return res;
+    };
+
+    auto const update_record =
+    [&req]()
+    {
+        http::response<http::string_body> res{http::status::ok, req.version()};
+        res.set(http::field::server, WST_VERSION);
+        res.set(http::field::content_type, "application/json");
+        res.set(http::field::connection, "close");
+        res.body() = UpdateRecord();
+        res.prepare_payload();
+        return res;
     }
-    
+
+    auto const delete_record =
+    [&req]()
+    {
+        http::response<http::string_body> res{http::status::ok, req.version()};
+        res.set(http::field::server, WST_VERSION);
+        res.set(http::field::content_type, "application/json");
+        res.set(http::field::connection, "close");
+        res.body() = DeleteRecordById();
+        res.prepare_payload();
+        return res;
+    }
+
+    auto const delete_all_record =
+    [&req]()
+    {
+        http::response<http::string_body> res{http::status::ok, req.version()};
+        res.set(http::field::server, WST_VERSION);
+        res.set(http::field::content_type, "application/json");
+        res.set(http::field::connection, "close");
+        res.body() = DeleteAllRecord();
+        res.prepare_payload();
+        return res;
+    }
+
+    std::string url = parseurl(req.target().to_string());
+    std::cout << " -- url: " << parseurl(req.target().to_string()) << std::endl;
     // Parse uri and request method
+    std::string uri = req.target().to_string();
+
+    // Create the record
+    if ((url.compare(WST_PATH) == 0) && (req.method() == http::verb::put))
+    {
+        std::cout << " ** create the record." << std::endl;
+        return send(create_record());
+    }
+
+    // Query the record by id
+    else if ((url.compare(WST_PATH) > 0) && (req.method() == http::verb::get))
+    {
+        std::cout << " ** query the record by id." << std::endl;
+        return send(query_record_by_id());
+    }
+
+    // Query all record
+    else if ((url.compare(WST_PATH) == 0) && (req.method() == http::verb::get))
+    {
+        std::cout << " ** query all record." << std::endl;
+        return send(query_all_record());
+    }
+
+    // Update the record
+    else if ((url.compare(WST_PATH) == 0) && (req.method() == http::verb::post))
+    {
+        std::cout << " ** update the record." << std::endl;
+        return send(UpdateRecord());
+    }
+
+    // Delete the record by id
+    else if ((url.compare(WST_PATH) > 0) && (req.method() == http::verb::delete_))
+    {
+        std::cout << " ** delete the record" << std::endl;
+        return send(DeleteRecordById());
+    }
+
+    // Delete all record
+    else if ((url.compare(WST_PATH) == 0) && (req.method() == http::verb::delete_))
+    {
+        std::cout << " ** delete all record." << std::endl;
+    }
 
     // 
     std::cout << "handler requst." << std::endl;

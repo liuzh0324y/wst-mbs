@@ -52,7 +52,7 @@ void HTTPServer::Run()
     try
     {
         std::cout << "in server run." << std::endl;
-        auto const address = boost::asio::ip::make_address("127.0.0.1");
+        auto const address = boost::asio::ip::make_address("0.0.0.0");
         auto const port = static_cast<unsigned short>(18005);
         auto const doc_root = std::make_shared<std::string>("/home/liuzh/share");
         auto const threads = 8;

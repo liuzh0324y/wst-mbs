@@ -40,7 +40,6 @@ HTTPListenser::HTTPListenser(boost::asio::io_context& ioc, tcp::endpoint endpoin
         fail(ec, "listen");
         return;
     }
-    std::cout << "struct" << std::endl;
 }
 
 void HTTPListenser::Run()
@@ -55,9 +54,7 @@ void HTTPListenser::Run()
 
 void HTTPListenser::DoAccept()
 {
-    std::cout << "do accept start" << std::endl;
     acceptor_.async_accept(socket_, std::bind(&HTTPListenser::OnAccept, shared_from_this(), std::placeholders::_1));
-    std::cout << "do accept end" << std::endl;
 }
 
 void HTTPListenser::OnAccept(boost::system::error_code ec)
