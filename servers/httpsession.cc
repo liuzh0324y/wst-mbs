@@ -282,7 +282,7 @@ void handleRequest(boost::beast::string_view doc_root, http::request<Body, http:
         res.body() = UpdateRecord();
         res.prepare_payload();
         return res;
-    }
+    };
 
     auto const delete_record =
     [&req]()
@@ -294,7 +294,7 @@ void handleRequest(boost::beast::string_view doc_root, http::request<Body, http:
         res.body() = DeleteRecordById();
         res.prepare_payload();
         return res;
-    }
+    };
 
     auto const delete_all_record =
     [&req]()
@@ -306,7 +306,7 @@ void handleRequest(boost::beast::string_view doc_root, http::request<Body, http:
         res.body() = DeleteAllRecord();
         res.prepare_payload();
         return res;
-    }
+    };
 
     std::string url = parseurl(req.target().to_string());
     std::cout << " -- url: " << parseurl(req.target().to_string()) << std::endl;
@@ -335,23 +335,24 @@ void handleRequest(boost::beast::string_view doc_root, http::request<Body, http:
     }
 
     // Update the record
-    else if ((url.compare(WST_PATH) == 0) && (req.method() == http::verb::post))
+    else if ((url.compare(WST_PATH) > 0) && (req.method() == http::verb::post))
     {
         std::cout << " ** update the record." << std::endl;
-        return send(UpdateRecord());
+        return send(update_record());
     }
 
     // Delete the record by id
     else if ((url.compare(WST_PATH) > 0) && (req.method() == http::verb::delete_))
     {
         std::cout << " ** delete the record" << std::endl;
-        return send(DeleteRecordById());
+        return send(delete_record());
     }
 
     // Delete all record
     else if ((url.compare(WST_PATH) == 0) && (req.method() == http::verb::delete_))
     {
         std::cout << " ** delete all record." << std::endl;
+        return send(delete_all_record());
     }
 
     // 

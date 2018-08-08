@@ -1,0 +1,3 @@
+[submodule "wst-ext"]
+	path = wst-ext
+	url = https://git.llvision.com/wst/wst-ext.git
