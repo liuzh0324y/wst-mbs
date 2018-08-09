@@ -10,7 +10,7 @@ Record::~Record()
 
 }
 
-bool Record::CreateChannel(const std::string &appid, const std::string &channelKey, const std::string &name,  agora::linuxsdk::uid_t uid,
+bool Record::CreateChannel(const std::string &appid, const std::string &channelKey, const std::string &channelId,  agora::linuxsdk::uid_t uid,
                 agora::recording::RecordingConfig &config)
 {
     if ((engine_ = agora::recording::IRecordingEngine::createAgoraRecordingEngine(appid.c_str(), this)) == NULL)
@@ -18,7 +18,7 @@ bool Record::CreateChannel(const std::string &appid, const std::string &channelK
         return false;
     }
 
-    if(agora::linuxsdk::ERR_OK != engine_->joinChannel(channelKey.c_str(), name.c_str(), uid, config))
+    if(agora::linuxsdk::ERR_OK != engine_->joinChannel(channelKey.c_str(), channelId.c_str(), uid, config))
     {
         return false;
     }

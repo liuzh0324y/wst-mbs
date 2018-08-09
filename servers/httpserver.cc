@@ -54,13 +54,12 @@ void HTTPServer::Run()
         std::cout << "in server run." << std::endl;
         auto const address = boost::asio::ip::make_address("0.0.0.0");
         auto const port = static_cast<unsigned short>(18005);
-        auto const doc_root = std::make_shared<std::string>("/home/liuzh/share");
         auto const threads = 8;
         
         // The io_context is required for all I/O
         boost::asio::io_context ioc{threads};
 
-        std::make_shared<HTTPListenser>(ioc, tcp::endpoint{address, port}, doc_root)->Run();
+        std::make_shared<HTTPListenser>(ioc, tcp::endpoint{address, port})->Run();
 
         std::vector<std::thread> v;
         v.reserve(threads - 1);

@@ -2,10 +2,9 @@
 #include "httpsession.hh"
 #include "httputils.hh"
 
-HTTPListenser::HTTPListenser(boost::asio::io_context& ioc, tcp::endpoint endpoint, std::shared_ptr<std::string const> const& doc_root)
+HTTPListenser::HTTPListenser(boost::asio::io_context& ioc, tcp::endpoint endpoint)
     : acceptor_(ioc),
-      socket_(ioc),
-      doc_root_(doc_root)
+      socket_(ioc)
 {
     boost::system::error_code ec;
 
@@ -66,7 +65,7 @@ void HTTPListenser::OnAccept(boost::system::error_code ec)
     else
     {
         std::cout << "listenser accept." << std::endl;
-        std::make_shared<HTTPSession>(std::move(socket_), doc_root_)->Run();
+        std::make_shared<HTTPSession>(std::move(socket_))->Run();
     }
 
     DoAccept();

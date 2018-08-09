@@ -6,7 +6,7 @@
 class HTTPSession : public std::enable_shared_from_this<HTTPSession>
 {
 public:
-    explicit HTTPSession(tcp::socket socket, std::shared_ptr<std::string const> const& doc_root);
+    explicit HTTPSession(tcp::socket socket);
     virtual ~HTTPSession();
 
     void Run();
@@ -19,6 +19,8 @@ public:
 
     void DoClose();
 
+protected:
+    
 
 private:
     struct send_lambda
@@ -48,7 +50,6 @@ private:
     tcp::socket socket_;
     boost::asio::strand<boost::asio::io_context::executor_type> strand_;
     boost::beast::flat_buffer buffer_;
-    std::shared_ptr<std::string const> doc_root_;
     http::request<http::string_body> req_;
     std::shared_ptr<void> res_;
     send_lambda lambda_;
