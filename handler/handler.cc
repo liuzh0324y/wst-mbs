@@ -26,11 +26,11 @@ bool Handler::CreateRecord(RecordInfo info)
     std::string type = info.type;
     std::string decryptionMode;
     std::string secret;
-    std::string mixResolution;
+    std::string mixResolution = info.resolution;
     std::string recordPath("/record");
     int channelProfile = 1;
     int streamType = 0;
-    int triggerMode = 1;
+    int triggerMode = 0;
     bool isMix = info.isMix;
     unsigned int uid = 0;
     agora::recording::RecordingConfig config;

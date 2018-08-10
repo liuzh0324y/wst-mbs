@@ -1,6 +1,7 @@
 #ifndef AGORA_RECORD_HH
 #define AGORA_RECORD_HH
 
+#include "common.hh"
 #include "IAgoraRecordingEngine.h"
 
 class Record : public agora::recording::IRecordingEngineEventHandler
@@ -94,9 +95,14 @@ protected:
     virtual void videoFrameReceived(unsigned int uid, const agora::linuxsdk::VideoFrame *frame) const;
 
 private:
+
+    int setVideoMixLayout();
+    
     agora::recording::IRecordingEngine *engine_;
 
     agora::recording::RecordingConfig config_;
+
+    std::vector<agora::linuxsdk::uid_t> peers_;
 };
 
 #endif // AGORA_RECORD_HH

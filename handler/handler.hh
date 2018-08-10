@@ -15,6 +15,7 @@ struct RecordInfo
     std::string uid;
     std::string type;
     bool isMix;
+    std::string resolution;
 };
 
 class Handler 
