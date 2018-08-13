@@ -6,10 +6,12 @@
 #include <boost/beast/version.hpp>
 #include <boost/asio/bind_executor.hpp>
 #include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/connect.hpp>
 #include <boost/asio/strand.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/config.hpp>
+#include <json/json.h>
 #include <algorithm>
 #include <cstdlib>
 #include <functional>
@@ -23,7 +25,7 @@
 
 using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 namespace http = boost::beast::http;    // from <boost/beast/http.hpp>
-namespace json = boost::property_tree;  // from <boost/property_tree/ptree.hpp>
+// namespace json = boost::property_tree;  // from <boost/property_tree/ptree.hpp> bug, out format is string.
 
 #define WST_VERSION "wst-mbs:server-1.0"
 #define WST_API_VERSION "V1.0"

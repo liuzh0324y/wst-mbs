@@ -86,145 +86,96 @@ void Handler::LeaveRecord()
     recorder.LeaveChannel();
 }
 
-json::ptree Handler::common()
+Json::Value Handler::common()
 {
-    try 
-    {
-        json::ptree pt;
-        pt.put("version",WST_API_VERSION);
-        pt.put("seqnum", 1);
-        pt.put("from", "wst-mbs");
-        pt.put("to", "client");
-        pt.put("type", "mbs");
-        pt.put("number", "0108935265");
-        pt.put("message", "");
-        pt.put("code", 0);
-        return pt;
-    }
-    catch (json::ptree_error ec)
-    {
-        ec.what();
-        return json::ptree();
-    }
+    // try 
+    // {
+    //     json::ptree pt;
+    //     pt.put("version",WST_API_VERSION);
+    //     pt.put("seqnum", 1);
+    //     pt.put("from", "wst-mbs");
+    //     pt.put("to", "client");
+    //     pt.put("type", "mbs");
+    //     pt.put("number", "0108935265");
+    //     pt.put("message", "");
+    //     pt.put("code", 0);
+    //     return pt;
+    // }
+    // catch (json::ptree_error ec)
+    // {
+    //     ec.what();
+    //     return json::ptree();
+    // }
+
+    Json::Value root;
+    root["version"] = WST_API_VERSION;
+    root["seqnum"] = 1;
+    root["from"] = "mbs";
+    root["to"] = "client";
+    root["type"] = "mbs";
+    root["number"] = "XXXX-XXXX-XXXX-XXXX";
+    root["message"] = "";
+    root["code"] = 0;
+    return root;
 }
 
 std::string Handler::resCreateRecord()
 {
-    std::stringstream ss;
-    try
-    {
-        json::ptree pt = common();
-        json::ptree data;
-        data.put("id", "dddd-dddd-dddd-dddd");
-        data.put("name","sample.mp4");
-        data.put("type", "mp4");
-        data.put("path", "/root/path");
-        data.put("url", "http://localhost:8080/sample.mp4");
-        data.put("size", 1024);
-        pt.add_child("data", data);
-        json::write_json(ss, pt);
-        std::cout << "pt.data(): " << ss.str()<< std::endl;
-        return ss.str();
-    }
-    catch (json::ptree_error ec)
-    {
-        ec.what();
-        return std::string();
-    }
+    Json::Value out = common();
+    Json::Value data;
+    data["id"] = "dddd-dddd-dddd-dddd";
+    data["name"] = "sample.mp4";
+    data["type"] = "mp4";
+    data["path"] = "/root/path";
+    data["url"] = "http://localhost:8080/sample.mp4";
+    data["size"] = 1024;
+    out["data"] = data;
+
+    return out.toStyledString();    
 }
 
 std::string Handler::resQueryRecordById()
 {
-    std::stringstream ss;
-    try
-    {
-        json::ptree pt = common();
-        json::ptree data;
-        data.put("id", "dddd-dddd-dddd-dddd");
-        data.put("type", "mp4");
-        data.put("path", "/root/path");
-        data.put("url", "http://localhost:8080/sample.mp4");
-        data.put("size", 1024);
-        data.put("description", "sample file.");
-        data.put("progress", 20);
-        pt.add_child("data", data);
-        json::write_json(ss, pt);
-        return ss.str();
-    }
-    catch (json::ptree_error ec)
-    {
-        ec.what();
-        return std::string();
-    }
+    Json::Value out = common();
+    Json::Value data;
+    data["id"] = "dddd-dddd-dddd-dddd";
+    data["type"] = "mp4";
+    data["path"] = "/root/path";
+    data["url"] = "http://localhost:8080/sample.mp4";
+    data["size"] = 1024;
+    data["description"] = "sample file.";
+    data["progress"] = 20;
+    out["data"] = data;
+    
+    return out.toStyledString();
 }
 
 std::string Handler::resQueryAllRecord()
 {
-    try
-    {
-        std::stringstream ss;
-        json::ptree pt = common();
-        // json::ptree data;
-        // data.put
-        json::write_json(ss, pt);
-        return ss.str();
-    }
-    catch (json::ptree_error ec)
-    {
-        ec.what();
-        return std::string();
-    }
+    Json::Value out = common();
+
+    return out.toStyledString();
 }
 
 std::string Handler::resUpdateRecord()
 {
-    try
-    {
-        std::stringstream ss;
-        json::ptree pt = common();
+    Json::Value out = common();
 
-        json::write_json(ss, pt);
-        return ss.str();
-    }
-    catch (json::ptree_error ec)
-    {
-        ec.what();
-        return std::string();
-    }
+    return out.toStyledString();
 }
 
 std::string Handler::resDeleteRecordById()
 {
-    try
-    {
-        std::stringstream ss;
-        json::ptree pt = common();
+    Json::Value out = common();
 
-        json::write_json(ss, pt);
-        return ss.str();
-    }
-    catch (json::ptree_error ec)
-    {
-        ec.what();
-        return std::string();
-    }
+    return out.toStyledString();
 }
 
 std::string Handler::resDeleteAllRecord()
 {
-    try
-    {
-        std::stringstream ss;
-        json::ptree pt = common();
+    Json::Value out = common();
 
-        json::write_json(ss, pt);
-        return ss.str();
-    }
-    catch (json::ptree_error ec)
-    {
-        ec.what();
-        return std::string();
-    }
+    return out.toStyledString();
 }
 
 std::string Handler::parseurl(std::string target)

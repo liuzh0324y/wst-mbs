@@ -1,4 +1,5 @@
 #include "agorarecord.hh"
+#include "manager.hh"
 
 Record::Record()
 {
@@ -82,7 +83,8 @@ void Record::onJoinChannelSuccess(const char * channelId, uid_t uid)
  */
 void Record::onLeaveChannel(agora::linuxsdk::LEAVE_PATH_CODE code)
 {
-
+	Manager manager;
+	manager.PutFileToServer();
 }
 
 /**

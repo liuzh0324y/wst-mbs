@@ -32,7 +32,7 @@ public:
     void LeaveRecord();
 
 protected:
-    static json::ptree common();
+    static Json::Value common();
 
     static std::string resCreateRecord();
 
@@ -179,6 +179,7 @@ void Handler::HandleRequest(http::request<Body, http::basic_fields<Allocator>>&&
     {
         std::cout << " ** create the record." << std::endl;
         RecordInfo info;
+        
         if (CreateRecord(info) != true)
         {
             std::cout << "create record failed." << std::endl;
