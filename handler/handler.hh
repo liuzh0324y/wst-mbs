@@ -36,6 +36,8 @@ protected:
 
     static std::string resCreateRecord();
 
+    static std::string resCreateRecordErr();
+
     static std::string resQueryRecordById();
 
     static std::string resQueryAllRecord();
@@ -109,6 +111,17 @@ void Handler::HandleRequest(http::request<Body, http::basic_fields<Allocator>>&&
         return res;
     };
 
+    auto const create_record_err =
+    [&req]()
+    {
+        http::response<http::string_body> res{http::status::ok, req.version()};
+        res.set(http::field::server, WST_VERSION);
+        res.set(http::field::content_type, "application/json");
+        res.set(http::field::connection, "close");
+        res.body() = Handler::resCreateRecordErr();
+        res.prepare_payload();
+        return res;
+    };
     auto const query_record_by_id =
     [&req]()
     {
@@ -183,6 +196,7 @@ void Handler::HandleRequest(http::request<Body, http::basic_fields<Allocator>>&&
         if (CreateRecord(info) != true)
         {
             std::cout << "create record failed." << std::endl;
+            return send(create_record_err());
         }
         return send(create_record());
     }

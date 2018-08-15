@@ -134,6 +134,21 @@ std::string Handler::resCreateRecord()
     return out.toStyledString();    
 }
 
+std::string Handler::resCreateRecordErr()
+{
+    Json::Value root;
+    root["version"] = WST_API_VERSION;
+    root["seqnum"] = 1;
+    root["from"] = "mbs";
+    root["to"] = "client";
+    root["type"] = "mbs";
+    root["number"] = "XXXX-XXXX-XXXX-XXXX";
+    root["message"] = "Failed to create the record channel.";
+    root["code"] = CreateRecordErr;
+
+    return root.toStyledString();
+}
+
 std::string Handler::resQueryRecordById()
 {
     Json::Value out = common();

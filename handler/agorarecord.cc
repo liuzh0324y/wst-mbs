@@ -35,6 +35,9 @@ bool Record::LeaveChannel()
     {
         engine_->leaveChannel();
     }
+
+
+	Manager().PutFileToServer();
 }
 /**
  *  Callback when an error occurred during the runtime of recording engine

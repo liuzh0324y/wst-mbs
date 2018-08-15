@@ -38,4 +38,17 @@ namespace http = boost::beast::http;    // from <boost/beast/http.hpp>
 #define WST_DELETE_RECORD "/api/v1/storage/record:rid"
 #define WST_DELETE_ALL_RECORD "/api/v1/storage/record"
 
+enum ErrCode {
+    Ok = 0,
+    CreateRecordErr = 4000,
+};
+
+typedef struct FileInfo_ 
+{
+    std::string name;
+    std::string bucket;
+    std::string object;
+    std::string type;
+}FileInfo;
+
 #endif // COMMON_HH
