@@ -40,6 +40,7 @@ namespace http = boost::beast::http;    // from <boost/beast/http.hpp>
 
 enum ErrCode {
     Ok = 0,
+    JsonParseErr = 3000,
     CreateRecordErr = 4000,
 };
 

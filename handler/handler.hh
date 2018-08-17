@@ -50,6 +50,8 @@ protected:
 
     static std::string parseurl(std::string target);
 
+    static std::string resParseErr();
+
 private:
     Handler();
     virtual ~Handler();
@@ -182,6 +184,18 @@ void Handler::HandleRequest(http::request<Body, http::basic_fields<Allocator>>&&
         return res;
     };
 
+    auto const json_err =
+    [&req]()
+    {
+        http::response<http::string_body> res{http::status::ok, req.version()};
+        res.set(http::field::server, WST_VERSION);
+        res.set(http::field::content_type, "application/json");
+        res.set(http::field::connection, "close");
+        res.body() = resParseErr();
+        res.prepare_payload();
+        return res;
+    };
+
     std::string url = parseurl(req.target().to_string());
     std::cout << " -- url: " << parseurl(req.target().to_string()) << std::endl;
     // Parse uri and request method
@@ -192,7 +206,20 @@ void Handler::HandleRequest(http::request<Body, http::basic_fields<Allocator>>&&
     {
         std::cout << " ** create the record." << std::endl;
         RecordInfo info;
-        
+        Json::Reader reader;
+        Json::Value root;
+        Json::Value data;
+        if (!reader.parse(req.body(), root))
+        {
+            return send(json_err());
+        }
+        data = root["data"];
+        std::cout << "req body: " << req.body() << std::endl;
+        info.appid = data["key"].asString();
+        info.channel = data["sessionid"].asString();
+        info.isMix = true;
+        info.name = data["name"].asString();
+        // info.resolution = root[""]
         if (CreateRecord(info) != true)
         {
             std::cout << "create record failed." << std::endl;

@@ -28,6 +28,7 @@ bool Handler::CreateRecord(RecordInfo info)
     std::string secret;
     std::string mixResolution = info.resolution;
     std::string recordPath("/record");
+    std::cout << "appid: " << appid << std::endl;
     int channelProfile = 1;
     int streamType = 0;
     int triggerMode = 0;
@@ -204,4 +205,19 @@ std::string Handler::parseurl(std::string target)
     {
         return target.substr(0, size);
     }
+}
+
+std::string Handler::resParseErr()
+{
+    Json::Value root;
+    root["version"] = WST_API_VERSION;
+    root["seqnum"] = 1;
+    root["from"] = "mbs";
+    root["to"] = "client";
+    root["type"] = "mbs";
+    root["number"] = "XXXX-XXXX-XXXX-XXXX";
+    root["message"] = "Failed to parse json format.";
+    root["code"] = JsonParseErr;
+
+    return root.toStyledString();
 }
