@@ -19,7 +19,7 @@ struct veriant_translator
 
 void Manager::PutFileToServer()
 {
-    auto const target = "/api/v1/storage/file";
+    auto const target = "/api/v1/cloundstorage/file";
     
     Json::Value out = common();
     Json::Value data;

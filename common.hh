@@ -30,13 +30,13 @@ namespace http = boost::beast::http;    // from <boost/beast/http.hpp>
 #define WST_VERSION "wst-mbs:server-1.0"
 #define WST_API_VERSION "V1.0"
 
-#define WST_PATH "/api/v1/storage/record"
-#define WST_CREATE_RECORD "/api/v1/storage/record"
-#define WST_QUERY_RECORD "/api/v1/storage/record/:rid"
-#define WST_QUERY_ALL_RECORD "/api/v1/storage/record"
-#define WST_UPDATE_RECORD "/api/v1/storage/record/:rid"
-#define WST_DELETE_RECORD "/api/v1/storage/record:rid"
-#define WST_DELETE_ALL_RECORD "/api/v1/storage/record"
+#define WST_PATH "/api/v1/rtcstorage/record"
+#define WST_CREATE_RECORD "/api/v1/rtcstorage/record"
+#define WST_QUERY_RECORD "/api/v1/rtcstorage/record/:rid"
+#define WST_QUERY_ALL_RECORD "/api/v1/rtcstorage/record"
+#define WST_UPDATE_RECORD "/api/v1/rtcstorage/record/:rid"
+#define WST_DELETE_RECORD "/api/v1/rtcstorage/record:rid"
+#define WST_DELETE_ALL_RECORD "/api/v1/rtcstorage/record"
 
 enum ErrCode {
     Ok = 0,
