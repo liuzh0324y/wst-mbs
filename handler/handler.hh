@@ -223,7 +223,7 @@ void Handler::HandleRequest(http::request<Body, http::basic_fields<Allocator>>&&
         if (CreateRecord(info) != true)
         {
             std::cout << "create record failed." << std::endl;
-            return send(create_record_err());
+            // return send(create_record_err());
         }
         return send(create_record());
     }

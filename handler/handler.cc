@@ -1,4 +1,5 @@
 #include "handler.hh"
+#include "manager.hh"
 
 Handler::Handler()
 {
@@ -131,7 +132,8 @@ std::string Handler::resCreateRecord()
     data["url"] = "http://localhost:8080/sample.mp4";
     data["size"] = 1024;
     out["data"] = data;
-
+    Manager mgr;
+    mgr.GetURLOfUpload("llvision", "sample30", "image/jpeg");
     return out.toStyledString();    
 }
 

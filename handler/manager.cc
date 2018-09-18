@@ -19,7 +19,7 @@ struct veriant_translator
 
 void Manager::PutFileToServer()
 {
-    auto const target = "/api/v1/cloundstorage/file";
+    auto const target = "/api/v1/cloudstorage/file";
     
     Json::Value out = common();
     Json::Value data;
@@ -36,6 +36,77 @@ void Manager::PutFileToServer()
     out["data"] = data;
     
     sendToServer(target, out.toStyledString());
+}
+
+void Manager::GetURLOfUpload(std::string bucket, std::string object, std::string type)
+{
+    std::string target = "/api/v1/cloudstorage/uploadinfo";
+    target.append("?bucket=");
+    target.append(bucket);
+    target.append("&object=");
+    target.append(object);
+    target.append("&type=");
+    target.append(type);
+
+    try
+    {
+        auto const host = "10.33.48.144";
+        auto const port = "18012";
+        boost::asio::io_context ioc;
+
+        tcp::resolver resolver{ioc};
+        tcp::socket socket{ioc};
+
+        auto const results = resolver.resolve(host, port);
+
+        boost::asio::connect(socket, results.begin(), results.end());
+        // Set up an HTTP Get request message
+        http::request<http::string_body> req;
+        req.target(target);
+        req.method(http::verb::get);
+        req.set(http::field::host, host);
+        req.set(http::field::user_agent, "mbs:v1.0");
+        req.set(http::field::accept, "application/json");
+        req.set(http::field::content_type, "application/json");
+        req.set(http::field::connection, "close");
+
+        http::write(socket, req);
+
+        std::cout << "write: {" << '\n' << req << "}" << std::endl;
+
+        boost::beast::flat_buffer buffer;
+
+        http::response<http::string_body> res;
+
+        http::read(socket, buffer, res);
+
+        std::cout << "read: {" << '\n' << res << "}" << std::endl;
+
+        Json::Reader reader;
+        Json::Value root;
+        Json::Value data;
+        if (reader.parse(res.body(), root) != true)
+        {
+            std::cout << "parse json error." << std::endl;
+        }
+        data = root["data"];
+        std::cout << "id: " << data["id"] << std::endl;
+        std::cout << "url: " << data["url"] << std::endl;
+        // Gracefully close the socket
+        boost::system::error_code ec;
+        socket.shutdown(tcp::socket::shutdown_both, ec);
+
+        // not_connected happends sometimes
+        // so don't bother reporting it.
+        if (ec && ec != boost::system::errc::not_connected)
+            throw boost::system::system_error{ec};
+
+
+    }
+    catch(std::exception const &e)
+    {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
 }
 
 Json::Value Manager::common()

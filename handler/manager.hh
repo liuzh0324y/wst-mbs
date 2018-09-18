@@ -9,6 +9,8 @@ public:
 
     void PutFileToServer();
 
+    void GetURLOfUpload(std::string bucket, std::string object, std::string type);
+
 private:
     Json::Value common();
 
